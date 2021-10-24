@@ -18,8 +18,8 @@ public class Task {
     public Task(String title, int time) {
         this.title = title;
         this.time = time;
-        this.active = false;
-        this.repetitive = false ;
+        active = false;
+        repetitive = false ;
     }
 
     /**
@@ -31,8 +31,8 @@ public class Task {
         this.start = start;
         this.end = end;
         this.interval = interval;
-        this.active = false;
-        this.repetitive = true;
+        active = false;
+        repetitive = true;
     }
 
     /**
@@ -75,11 +75,11 @@ public class Task {
      */
     public void setTime(int time) {
         if (isRepeated()) {
-            this.start = time;
-            this.end = time;
-            this.interval = 0;
+            start = time;
+            end = time;
+            interval = 0;
             this.time = time;
-            this.repetitive = false;
+            repetitive = false;
         } else
             this.time = time;
     }
@@ -113,7 +113,7 @@ public class Task {
             this.start = start;
             this.end = end;
             this.interval = interval;
-            this.repetitive = true;
+            repetitive = true;
         }
     }
 
@@ -121,7 +121,7 @@ public class Task {
      * Метод що перевіряє повторюваність активної "Задачі".
      */
     public boolean isRepeated() {
-        return this.repetitive;
+        return repetitive;
     }
 
     /**
@@ -129,19 +129,15 @@ public class Task {
      * якщо задача не виконується - повертає значення -1
      */
     public int nextTimeAfter(int current) {
-        if (this.isActive()) {
-            if (!this.repetitive) {
-                return (current < this.time)? this.time: -1;
+        if (isActive()) {
+            if (!repetitive) {
+                return (current < time)? time: -1;
             } else {
-                if (current < this.start) {
-                    return this.start;
+                if (current < start) {
+                    return start;
                 } else {
-                    if (current <= (this.end - ((this.end - this.start) % this.interval))) {
-                        int temp = this.start;
-                        while (temp <= current) {
-                            temp += this.interval;
-                        }
-                        return temp;
+                    if ( current <= (end - ((end - start) % interval))) {
+                        return current + (interval - (current - start) % interval);
                     } else
                         return -1;
                 }
