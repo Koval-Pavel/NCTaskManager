@@ -15,24 +15,32 @@ public class Task {
     /**
      * Конструктор не активної задачі, яка виконується у заданий час без повторення із заданою назвою.
      */
-    public Task(String title, int time) {
-        this.title = title;
-        this.time = time;
-        active = false;
-        repetitive = false ;
+    public Task(String title, int time) throws IllegalArgumentException{
+        if (time < 0) {
+            throw new IllegalArgumentException();
+        } else {
+            this.title = title;
+            this.time = time;
+            active = false;
+            repetitive = false;
+        }
     }
 
     /**
      * Конструктор не активної задачі, яка виконується у заданому проміжку часу (і початок і кінець включно) із
      * заданим інтервалом.
      */
-    public Task(String title, int start, int end, int interval) {
-        this.title = title;
-        this.start = start;
-        this.end = end;
-        this.interval = interval;
-        active = false;
-        repetitive = true;
+    public Task(String title, int start, int end, int interval) throws IllegalArgumentException{
+        if (start < 0 && end < 0 && interval < 0) {
+            throw new IllegalArgumentException();
+        } else {
+            this.title = title;
+            this.start = start;
+            this.end = end;
+            this.interval = interval;
+            active = false;
+            repetitive = true;
+        }
     }
 
     /**
@@ -73,15 +81,19 @@ public class Task {
     /**
      * Метод що встановлює час виконання "Задачі" (що не повторюється).
      */
-    public void setTime(int time) {
-        if (isRepeated()) {
-            start = time;
-            end = time;
-            interval = 0;
-            this.time = time;
-            repetitive = false;
-        } else
-            this.time = time;
+    public void setTime(int time) throws IllegalArgumentException {
+        if (time < 0) {
+            throw new IllegalArgumentException();
+        } else {
+            if (isRepeated()) {
+                start = time;
+                end = time;
+                interval = 0;
+                this.time = time;
+                repetitive = false;
+            } else
+                this.time = time;
+        }
     }
 
     /**
@@ -108,12 +120,16 @@ public class Task {
     /**
      * Метод що встановлює час початку, закінченяя та інтервалу виконання "Задачі" (що повторюється).
      */
-    public void setTime(int start, int end, int interval) {
-        if (!isRepeated()) {
-            this.start = start;
-            this.end = end;
-            this.interval = interval;
-            repetitive = true;
+    public void setTime(int start, int end, int interval) throws IllegalArgumentException {
+        if (start < 0 && end < 0 && interval < 0) {
+            throw new IllegalArgumentException();
+        } else {
+            if (!isRepeated()) {
+                this.start = start;
+                this.end = end;
+                this.interval = interval;
+                repetitive = true;
+            }
         }
     }
 
@@ -128,22 +144,26 @@ public class Task {
      * Метод що повертає час наступного виконання задачі після вказаного часу current,
      * якщо задача не виконується - повертає значення -1
      */
-    public int nextTimeAfter(int current) {
-        if (isActive()) {
-            if (!repetitive) {
-                return (current < time)? time: -1;
-            } else {
-                if (current < start) {
-                    return start;
+    public int nextTimeAfter(int current) throws IllegalArgumentException {
+        if (current < 0) {
+            throw new IllegalArgumentException();
+        } else {
+            if (isActive()) {
+                if (!repetitive) {
+                    return (current < time) ? time : -1;
                 } else {
-                    if ( current <= (end - ((end - start) % interval))) {
-                        return current + (interval - (current - start) % interval);
-                    } else
-                        return -1;
+                    if (current < start) {
+                        return start;
+                    } else {
+                        if (current <= (end - ((end - start) % interval))) {
+                            return current + (interval - (current - start) % interval);
+                        } else
+                            return -1;
+                    }
                 }
-            }
-        } else
-            return -1;
+            } else
+                return -1;
+        }
     }
 }
 
