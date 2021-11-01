@@ -3,12 +3,15 @@ package ua.edu.sumdu.j2se.koval.tasks;
 /**
  *  Класс що описує спискок "Задач" (через дву-зв'язний список).
  */
-public class LinkedTaskList {
+public class LinkedTaskList extends AbstractTaskList{
 
     private Node last;
     private Node first;
     private Node nodeForRemove;
-    private int size;
+
+    public LinkedTaskList() {
+        type = ListTypes.types.LINKED;
+    }
 
     /**
      * Вкладений статичний клас що надає реалізацію "Вузла" для побудови дву-зв'язного списку.
@@ -40,7 +43,7 @@ public class LinkedTaskList {
             } else {
                 l.next = newNode;
             }
-            size++;
+            ++taskCounter;
         }
     }
 
@@ -50,20 +53,20 @@ public class LinkedTaskList {
     public boolean remove(Task task) {
         boolean result = false;
         for (int i = 0; i < size(); i++) {
-            if (getTask(i).getTitle().equals(task.getTitle()) && getTask(i).getTime() == task.getTime()) {
+            if (ifEquals(i, task)) {
                 if (i == 0) {
                     first = first.next;
                     result = true;
-                    --size;
+                    --taskCounter;
                 } else {
                     if (i == (size() - 1)) {
                         last = last.prev;
                         result = true;
-                        --size;
+                        --taskCounter;
                     } else {
                         nodeForRemove.prev.next = nodeForRemove.next;
                         nodeForRemove.next.prev = nodeForRemove.prev;
-                        --size;
+                        --taskCounter;
                         result = true;
                     }
                 }
@@ -74,49 +77,32 @@ public class LinkedTaskList {
     }
 
     /**
-     * Метод, що повертає кількість "Задач" у списку.
-     */
-    public int size() {
-        return size;
-    }
-
-    /**
      * Метод, що повертає "Задачу", яка знаходиться на вказаному місці у
-     * списку, перша задача має індекс 0.
+     * списку, перша задача має індекс  0.
      */
     public Task getTask(int index) throws IndexOutOfBoundsException {
         if (index < 0 || index >= size() || size() == 0) {
             throw new IndexOutOfBoundsException();
         } else {
-            int counter = size;
-            Node nodeFinder = last;
-            while (index != counter - 1) {
-                nodeFinder = nodeFinder.prev;
-                --counter;
+            Node nodeFinder;
+            int counter;
+            if (index > taskCounter / 2) {
+                counter = taskCounter - 1;
+                nodeFinder = last; //
+                while (index != counter) {
+                    nodeFinder = nodeFinder.prev;
+                    --counter;
+                }
+            } else {
+                counter = 0;
+                nodeFinder = first;
+                while (index != counter) {
+                    nodeFinder = nodeFinder.next;
+                    ++counter;
+                }
             }
             nodeForRemove = nodeFinder;
             return nodeFinder.item;
-        }
-    }
-
-    /**
-     Метод, що повертає підмножину "Задач", які заплановані на виконання
-     хоча б раз після часу "from" і не пізніше ніж "to".
-     */
-    public LinkedTaskList incoming(int from, int to) throws IllegalArgumentException {
-        if (from < 0 && to < 0 && from > to) {
-            throw new IllegalArgumentException();
-        } else {
-            LinkedTaskList incomLinkTask = new LinkedTaskList();
-            for (int i = 0; i < size(); i++) {
-                int temp = getTask(i).nextTimeAfter(from);
-                if (getTask(i) != null) {
-                    if (temp != -1 && temp < to && getTask(i).isActive()) {
-                        incomLinkTask.add(getTask(i));
-                    }
-                } else break;
-            }
-            return incomLinkTask;
         }
     }
 }
