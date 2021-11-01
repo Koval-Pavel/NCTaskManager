@@ -3,10 +3,9 @@ package ua.edu.sumdu.j2se.koval.tasks;
 /**
  *  Класс що описує спискок задач "Задач" (через масив).
  */
-public class ArrayTaskList {
+public class ArrayTaskList extends AbstractTaskList{
 
     private int arrDimension = 10;
-    private int taskCounter = 0;
     private Task[] tasksList;
 
     /**
@@ -14,6 +13,7 @@ public class ArrayTaskList {
      */
     public ArrayTaskList() {
         tasksList = new Task[arrDimension];
+        type = ListTypes.types.ARRAY;
     }
 
     /**
@@ -40,8 +40,8 @@ public class ArrayTaskList {
     public boolean remove(Task task) {
         boolean check = false;
         for (int i = 0; i <= tasksList.length - 1; i++) {
-            if (tasksList[i] != null) {
-                if (tasksList[i].getTitle().equals(task.getTitle()) && tasksList[i].getTime() == task.getTime()) {
+            if (getTask(i) != null) {
+                if (ifEquals(i, task)) {
                     check = true;
                     --taskCounter;
                     if (tasksList.length - 1 - i >= 0)
@@ -51,13 +51,6 @@ public class ArrayTaskList {
                 }
             } else break;
         } return check;
-    }
-
-    /**
-     * Метод, що повертає кількість "Задач" у списку.
-     */
-    public int size() {
-        return taskCounter;
     }
 
     /**
@@ -72,25 +65,4 @@ public class ArrayTaskList {
         }
     }
 
-
-    /**
-     Метод, що повертає підмножину "Задач", які заплановані на виконання
-     хоча б раз після часу "from" і не пізніше ніж "to".
-     */
-    public  ArrayTaskList incoming(int from, int to) throws IllegalArgumentException {
-        if (from < 0 && to < 0 && from > to) {
-            throw new IllegalArgumentException();
-        } else {
-            ArrayTaskList incomArrTask = new ArrayTaskList();
-            for (int i = 0; i <= taskCounter - 1; i++) {
-                int temp = tasksList[i].nextTimeAfter(from);
-                if (tasksList[i] != null) {
-                    if (temp != -1 && temp < to && tasksList[i].isActive()) {
-                        incomArrTask.add(tasksList[i]);
-                    }
-                } else break;
-            }
-            return incomArrTask;
-        }
-    }
 }
