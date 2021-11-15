@@ -11,6 +11,7 @@ public class TaskListFactory {
     public static AbstractTaskList createTaskList(ListTypes.types type) {
 
         AbstractTaskList get = null;
+
         switch (type) {
             case ARRAY:
                 get = new ArrayTaskList();

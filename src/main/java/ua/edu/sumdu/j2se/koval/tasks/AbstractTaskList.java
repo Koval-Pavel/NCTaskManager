@@ -1,9 +1,10 @@
 package ua.edu.sumdu.j2se.koval.tasks;
 
+
 /**
  *  Абстрактний класс що описує характерні методи для списку задач.
  */
-public abstract class AbstractTaskList {
+public abstract class AbstractTaskList implements Iterable<Task>{
     protected int taskCounter = 0;
     protected ListTypes.types type;
 
@@ -34,7 +35,10 @@ public abstract class AbstractTaskList {
      * Спільна реалізація метод, що повертаэ true якщо вказана "Задача" знаходиться в множині за вказаним індексом.  .
      */
     public boolean ifEquals (int i, Task task) {
-        return  getTask(i).getTitle().equals(task.getTitle()) && getTask(i).getTime() == task.getTime();
+        if (getTask(i).getTitle() == null || task.getTitle() == null) {
+            return false;
+        } else
+            return  getTask(i).getTitle().equals(task.getTitle()) && getTask(i).getTime() == task.getTime();
     }
 
     /**
@@ -56,6 +60,41 @@ public abstract class AbstractTaskList {
             }
             return incomTask;
         }
+    }
+
+    /**
+     Перевизначення методу, для реалізації порівнянь "Задач" в списках.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractTaskList that = (AbstractTaskList) o;
+        boolean check = false;
+        if (hashCode() == that.hashCode()) {
+            if (size() == that.size()) {
+                check = true;
+                for (int i = size() - 1; i >= 0; i--) {
+                    if (!ifEquals(i, that.getTask(i))) {
+                        check = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return check;
+    }
+
+    /**
+     Перевизначення методу, для рядкового відображення інформації про "Задачі".
+     */
+    @Override
+    public String toString() {
+        String text = null;
+        for (int i = 0; i < taskCounter; i++) {
+            text += "Task #" + i + ":" + getTask(i).toString() + "\n";
+        }
+        return text;
     }
 
 }

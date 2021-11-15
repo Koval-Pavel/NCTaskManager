@@ -1,9 +1,11 @@
 package ua.edu.sumdu.j2se.koval.tasks;
 
+import java.util.Objects;
+
 /**
  *  Класс що описує "Задачі".
  */
-public class Task {
+public class Task implements Cloneable {
     private String title;
     private int time;
     private int start;
@@ -165,5 +167,61 @@ public class Task {
                 return -1;
         }
     }
+
+    /**
+     * Перевизначення методу клонування "Задачі"
+     */
+    @Override
+    public Task clone() throws CloneNotSupportedException {
+        return (Task) super.clone();
+    }
+
+    /**
+     * Перевизначення методу, для реалізації порівнянь "Задач"
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return time == task.time && start == task.start && end == task.end && interval == task.interval && active == task.active && repetitive == task.repetitive && Objects.equals(title, task.title);
+    }
+
+    /**
+     * Перевизначення методу, для отримання Хеш-коду.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, time, start, end, interval, active, repetitive);
+    }
+
+    /**
+     Перевизначення методу, для рядкового відображення інформації про "Задачі".
+     */
+    @Override
+    public String toString() {
+        String text;
+        if (interval !=0) {
+            text = "{" +
+                    "title='" + title + '\'' +
+                    ", start=" + start +
+                    ", end=" + end +
+                    ", interval=" + interval +
+                    ", active=" + active +
+                    ", repetitive=" + repetitive +
+                    '}';
+        } else {
+            text = "{" +
+                    "title='" + title + '\'' +
+                    ", time=" + time +
+
+                    ", active=" + active +
+                    ", repetitive=" + repetitive +
+                    '}';
+        }
+
+        return text;
+    }
+
 }
 
