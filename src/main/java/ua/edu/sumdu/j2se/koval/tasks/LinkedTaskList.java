@@ -1,13 +1,19 @@
 package ua.edu.sumdu.j2se.koval.tasks;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+
 /**
  *  Класс що описує спискок "Задач" (через дву-зв'язний список).
  */
-public class LinkedTaskList extends AbstractTaskList{
+public class LinkedTaskList extends AbstractTaskList implements Cloneable{
 
-    private Node last;
-    private Node first;
+    private Node last = null;
+    private Node first = null;
     private Node nodeForRemove;
+    private static int prevCloneCounter;
+
 
     public LinkedTaskList() {
         type = ListTypes.types.LINKED;
@@ -16,8 +22,8 @@ public class LinkedTaskList extends AbstractTaskList{
     /**
      * Вкладений статичний клас що надає реалізацію "Вузла" для побудови дву-зв'язного списку.
      */
-    private static class Node {
-        final private Task item;
+    private static class Node implements Cloneable {
+        private Task item;
         private Node prev;
         private Node next;
 
@@ -25,6 +31,19 @@ public class LinkedTaskList extends AbstractTaskList{
             this.item = element;
             this.prev = prev;
             this.next = next;
+        }
+        @Override
+        public Node clone() throws CloneNotSupportedException {
+            Node res = (Node) super.clone();
+            res.item = item.clone();
+            if (prevCloneCounter > 0) {
+                res.prev = (res.prev == null) ? null : prev.clone();
+                prevCloneCounter--;
+            }
+            else {
+                res.next = (res.next == null) ? null : next.clone();
+            }
+            return res;
         }
     }
 
@@ -54,6 +73,11 @@ public class LinkedTaskList extends AbstractTaskList{
         boolean result = false;
         for (int i = 0; i < size(); i++) {
             if (ifEquals(i, task)) {
+                if (size() == 1) {
+                    first = null;
+                    last = null;
+                    break;
+                }
                 if (i == 0) {
                     first = first.next;
                     result = true;
@@ -104,5 +128,78 @@ public class LinkedTaskList extends AbstractTaskList{
             nodeForRemove = nodeFinder;
             return nodeFinder.item;
         }
+    }
+
+    /**
+     * Перевизначення методу, реалізації ітератора.
+     */
+    @Override
+    public Iterator<Task> iterator() {
+
+        return new Iterator<Task>() {
+            int nextCallCounter = 0;
+            Node currentNodeIterator = first;
+
+            @Override
+            public boolean hasNext() {
+                return (nextCallCounter < size() && currentNodeIterator.item != null );
+            }
+
+            @Override
+            public Task next() {
+                if (hasNext()) {
+                    Task res = currentNodeIterator.item;
+                    currentNodeIterator = currentNodeIterator.next;
+                    ++nextCallCounter;
+                    return res;
+                } else throw new NoSuchElementException();
+            }
+
+            public void remove() throws IllegalStateException{
+                if (nextCallCounter == 0) {
+                    throw  new IllegalStateException();
+                } else {
+                    if (nextCallCounter == 1) {
+                        first = first.next;
+                        first.prev = null;
+                    } else {
+                        if (nextCallCounter == size()) {
+                            last = last.prev;
+                            last.next = null;
+                        } else {
+                            nodeForRemove = currentNodeIterator.prev;
+                            nodeForRemove.prev.next = nodeForRemove.next;
+                            nodeForRemove.next.prev = nodeForRemove.prev;
+                        }
+                    }
+                }
+                --taskCounter;
+                --nextCallCounter;
+            }
+        };
+    }
+
+    /**
+     * Перевизначення методу клонування "Задачі"
+     */
+    @Override
+    public LinkedTaskList clone() throws CloneNotSupportedException {
+        LinkedTaskList result = (LinkedTaskList) super.clone();
+        prevCloneCounter = taskCounter;
+        result.last = last.clone();
+        result.first = first.clone();
+        return result;
+    }
+
+    /**
+     * Перевизначення методу, для отримання Хеш-коду.
+     */
+    @Override
+    public int hashCode() {
+        int result = 0;
+        for (int i = 0; i < taskCounter; i++) {
+            result += Objects.hashCode(getTask(i));
+        }
+        return result * 31;
     }
 }

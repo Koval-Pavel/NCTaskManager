@@ -1,9 +1,11 @@
 package ua.edu.sumdu.j2se.koval.tasks;
 
+import java.util.*;
+
 /**
  *  Класс що описує спискок задач "Задач" (через масив).
  */
-public class ArrayTaskList extends AbstractTaskList{
+public class ArrayTaskList extends AbstractTaskList implements Cloneable {
 
     private int arrDimension = 10;
     private Task[] tasksList;
@@ -50,7 +52,8 @@ public class ArrayTaskList extends AbstractTaskList{
                     break;
                 }
             } else break;
-        } return check;
+        }
+        return check;
     }
 
     /**
@@ -64,5 +67,69 @@ public class ArrayTaskList extends AbstractTaskList{
             return tasksList[index];
         }
     }
+
+    /**
+     * Перевизначення методу, реалізації ітератора.
+     */
+    @Override
+    public Iterator<Task> iterator() {
+        return new Iterator<Task>() {
+            int nextCallCounter = 0;
+            int currentIndexIterator = 0;
+
+            @Override
+            public boolean hasNext() {
+                return  tasksList[currentIndexIterator] != null;
+            }
+
+            @Override
+            public Task next() {
+                if (hasNext()) {
+                    Task res = tasksList[currentIndexIterator];
+                    ++currentIndexIterator;
+                    ++nextCallCounter;
+                    return res;
+                } else throw new NoSuchElementException();
+
+            }
+
+            @Override
+            public void remove() throws IllegalStateException{
+                if (nextCallCounter == 0) {
+                    throw  new IllegalStateException();
+                } else {
+                    currentIndexIterator--;
+                    --taskCounter;
+                    if (tasksList.length - 1 - currentIndexIterator >= 0)
+                        System.arraycopy(tasksList, currentIndexIterator + 1, tasksList, currentIndexIterator, tasksList.length - 1 - currentIndexIterator);
+                    tasksList[tasksList.length - 1] = null;
+                }
+            }
+        };
+    }
+
+    /**
+     * Перевизначення методу клонування "Задачі"
+     */
+    @Override
+    public ArrayTaskList clone() throws CloneNotSupportedException {
+        ArrayTaskList result = (ArrayTaskList)super.clone();
+        result.tasksList = tasksList.clone();
+        for (int i = 0; i < taskCounter; i++) {
+            result.tasksList[i] = tasksList[i].clone();
+        }
+        return result;
+    }
+
+    /**
+     * Перевизначення методу, для отримання Хеш-коду.
+     */
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(arrDimension);
+        result = 31 * result + Arrays.hashCode(tasksList);
+        return result;
+    }
+
 
 }
