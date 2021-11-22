@@ -1,13 +1,14 @@
 package ua.edu.sumdu.j2se.koval.tasks;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  *  Класс що описує спискок задач "Задач" (через масив).
  */
 public class ArrayTaskList extends AbstractTaskList implements Cloneable {
 
-    private int arrDimension = 10;
+    private int arrDimension = 20;
     private Task[] tasksList;
 
     /**
@@ -27,10 +28,10 @@ public class ArrayTaskList extends AbstractTaskList implements Cloneable {
         } else {
             tasksList[taskCounter] = task;
             if (taskCounter == (arrDimension - 1)) {
-                Task[] TasksListCopy = new Task[arrDimension + 10];
+                Task[] TasksListCopy = new Task[arrDimension + 15];
                 System.arraycopy(tasksList, 0, TasksListCopy, 0, arrDimension);
                 tasksList = TasksListCopy;
-                arrDimension += 10;
+                arrDimension += 15;
             }
             ++taskCounter;
         }
@@ -122,13 +123,11 @@ public class ArrayTaskList extends AbstractTaskList implements Cloneable {
     }
 
     /**
-     * Перевизначення методу, для отримання Хеш-коду.
+     * Перевизначення методу, для отримання потоку з коллекції.
      */
     @Override
-    public int hashCode() {
-        int result = Objects.hashCode(arrDimension);
-        result = 31 * result + Arrays.hashCode(tasksList);
-        return result;
+    public Stream<Task> getStream() {
+        return super.getStream();
     }
 
 

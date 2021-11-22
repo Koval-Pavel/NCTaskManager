@@ -3,6 +3,7 @@ package ua.edu.sumdu.j2se.koval.tasks;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  *  Класс що описує спискок "Задач" (через дву-зв'язний список).
@@ -192,14 +193,12 @@ public class LinkedTaskList extends AbstractTaskList implements Cloneable{
     }
 
     /**
-     * Перевизначення методу, для отримання Хеш-коду.
+     * Перевизначення методу, для отримання потоку з коллекції.
      */
     @Override
-    public int hashCode() {
-        int result = 0;
-        for (int i = 0; i < taskCounter; i++) {
-            result += Objects.hashCode(getTask(i));
-        }
-        return result * 31;
+    public Stream<Task> getStream() {
+        return super.getStream();
     }
+
+
 }
