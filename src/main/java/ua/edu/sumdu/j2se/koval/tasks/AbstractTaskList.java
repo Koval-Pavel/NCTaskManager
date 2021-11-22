@@ -1,6 +1,10 @@
 package ua.edu.sumdu.j2se.koval.tasks;
 
 
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Stream;
+
 /**
  *  Абстрактний класс що описує характерні методи для списку задач.
  */
@@ -45,19 +49,12 @@ public abstract class AbstractTaskList implements Iterable<Task>{
      Спільна реалізація метод, що повертає підмножину "Задач", які заплановані на виконання
      хоча б раз після часу "from" і не пізніше ніж "to".
      */
-    public  AbstractTaskList incoming(int from, int to) throws IllegalArgumentException {
+    public final AbstractTaskList incoming(int from, int to) throws IllegalArgumentException {
         if (from < 0 && to < 0 && from > to) {
             throw new IllegalArgumentException();
         } else {
             AbstractTaskList incomTask = TaskListFactory.createTaskList(type);
-            for (int i = 0; i < size(); i++) {
-                int temp = getTask(i).nextTimeAfter(from);
-                if (getTask(i) != null) {
-                    if (temp != -1 && temp < to && getTask(i).isActive()) {
-                        incomTask.add(getTask(i));
-                    }
-                } else break;
-            }
+            getStream().filter(s -> s != null && s.nextTimeAfter(from) > from && s.nextTimeAfter(to) < to ).forEachOrdered(incomTask::add);
             return incomTask;
         }
     }
@@ -90,11 +87,35 @@ public abstract class AbstractTaskList implements Iterable<Task>{
      */
     @Override
     public String toString() {
-        String text = null;
+        StringBuilder text = new StringBuilder();
         for (int i = 0; i < taskCounter; i++) {
-            text += "Task #" + i + ":" + getTask(i).toString() + "\n";
+            text.append("Task #").append(i).append(":").append(getTask(i).toString()).append("\n");
         }
-        return text;
+        return text.toString();
     }
+
+    /**
+     * Перевизначення методу, для отримання Хеш-коду.
+     */
+    @Override
+    public int hashCode() {
+        int result = 0;
+        for (int i = 0; i < taskCounter; i++) {
+            result += Objects.hashCode(getTask(i));
+        }
+        return result * 31;
+    }
+
+    /**
+     Метод, що дозволяє працювати нам з коллекціями як з потоками.
+     */
+    public Stream<Task> getStream() {
+        Task[] collToArr = new Task[size()];
+        for (int i = 0; i < collToArr.length; i++) {
+            collToArr[i] = getTask(i);
+        }
+        return Arrays.stream(collToArr);
+    }
+
 
 }
