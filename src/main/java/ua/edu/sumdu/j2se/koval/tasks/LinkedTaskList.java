@@ -1,8 +1,8 @@
 package ua.edu.sumdu.j2se.koval.tasks;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -14,7 +14,6 @@ public class LinkedTaskList extends AbstractTaskList implements Cloneable{
     private Node first = null;
     private Node nodeForRemove;
     private static int prevCloneCounter;
-
 
     public LinkedTaskList() {
         type = ListTypes.types.LINKED;
@@ -137,7 +136,7 @@ public class LinkedTaskList extends AbstractTaskList implements Cloneable{
     @Override
     public Iterator<Task> iterator() {
 
-        return new Iterator<Task>() {
+        return new Iterator<>() {
             int nextCallCounter = 0;
             Node currentNodeIterator = first;
 
@@ -197,7 +196,11 @@ public class LinkedTaskList extends AbstractTaskList implements Cloneable{
      */
     @Override
     public Stream<Task> getStream() {
-        return super.getStream();
+        Task[] collToArr = new Task[size() ];
+        for (int i = 0; i < collToArr.length; i++) {
+            collToArr[i] = getTask(i);
+        }
+        return Arrays.stream(collToArr);
     }
 
 

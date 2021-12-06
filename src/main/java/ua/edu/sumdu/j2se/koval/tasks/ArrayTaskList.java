@@ -8,7 +8,7 @@ import java.util.stream.Stream;
  */
 public class ArrayTaskList extends AbstractTaskList implements Cloneable {
 
-    private int arrDimension = 20;
+    private int arrDimension = 10;
     private Task[] tasksList;
 
     /**
@@ -27,8 +27,8 @@ public class ArrayTaskList extends AbstractTaskList implements Cloneable {
             throw new NullPointerException();
         } else {
             tasksList[taskCounter] = task;
-            if (taskCounter == (arrDimension - 1)) {
-                Task[] TasksListCopy = new Task[arrDimension + 15];
+            if (taskCounter == (arrDimension)) {
+                Task[] TasksListCopy = new Task[arrDimension];
                 System.arraycopy(tasksList, 0, TasksListCopy, 0, arrDimension);
                 tasksList = TasksListCopy;
                 arrDimension += 15;
@@ -74,13 +74,13 @@ public class ArrayTaskList extends AbstractTaskList implements Cloneable {
      */
     @Override
     public Iterator<Task> iterator() {
-        return new Iterator<Task>() {
+        return new Iterator<>() {
             int nextCallCounter = 0;
             int currentIndexIterator = 0;
 
             @Override
             public boolean hasNext() {
-                return  tasksList[currentIndexIterator] != null;
+                return tasksList[currentIndexIterator] != null;
             }
 
             @Override
@@ -95,9 +95,9 @@ public class ArrayTaskList extends AbstractTaskList implements Cloneable {
             }
 
             @Override
-            public void remove() throws IllegalStateException{
+            public void remove() throws IllegalStateException {
                 if (nextCallCounter == 0) {
-                    throw  new IllegalStateException();
+                    throw new IllegalStateException();
                 } else {
                     currentIndexIterator--;
                     --taskCounter;
@@ -127,7 +127,7 @@ public class ArrayTaskList extends AbstractTaskList implements Cloneable {
      */
     @Override
     public Stream<Task> getStream() {
-        return super.getStream();
+        return Arrays.stream(tasksList);
     }
 
 

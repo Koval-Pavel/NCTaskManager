@@ -1,7 +1,6 @@
 package ua.edu.sumdu.j2se.koval.tasks;
 
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -10,7 +9,7 @@ import java.util.stream.Stream;
  */
 public abstract class AbstractTaskList implements Iterable<Task>{
     protected int taskCounter = 0;
-    protected ListTypes.types type;
+    protected static ListTypes.types type ;
 
     /**
      * Абстрактний опис метода, що додає до списку вказану "Задачу".
@@ -43,20 +42,6 @@ public abstract class AbstractTaskList implements Iterable<Task>{
             return false;
         } else
             return  getTask(i).getTitle().equals(task.getTitle()) && getTask(i).getTime() == task.getTime();
-    }
-
-    /**
-     Спільна реалізація метод, що повертає підмножину "Задач", які заплановані на виконання
-     хоча б раз після часу "from" і не пізніше ніж "to".
-     */
-    public final AbstractTaskList incoming(int from, int to) throws IllegalArgumentException {
-        if (from < 0 && to < 0 && from > to) {
-            throw new IllegalArgumentException();
-        } else {
-            AbstractTaskList incomTask = TaskListFactory.createTaskList(type);
-            getStream().filter(s -> s != null && s.nextTimeAfter(from) > from && s.nextTimeAfter(to) < to ).forEachOrdered(incomTask::add);
-            return incomTask;
-        }
     }
 
     /**
@@ -109,13 +94,7 @@ public abstract class AbstractTaskList implements Iterable<Task>{
     /**
      Метод, що дозволяє працювати нам з коллекціями як з потоками.
      */
-    public Stream<Task> getStream() {
-        Task[] collToArr = new Task[size()];
-        for (int i = 0; i < collToArr.length; i++) {
-            collToArr[i] = getTask(i);
-        }
-        return Arrays.stream(collToArr);
-    }
+    public abstract Stream<Task> getStream();
 
 
 }
