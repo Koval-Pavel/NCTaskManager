@@ -1,6 +1,8 @@
+
 package ua.edu.sumdu.j2se.koval.tasks;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -20,11 +22,11 @@ public class Tasks  {
         if (start.isBefore(LocalDateTime.MIN ) && end.isBefore(LocalDateTime.MAX)  && start.isBefore(end)) {
             throw new IllegalArgumentException();
         } else {
-            AbstractTaskList tempList = TaskListFactory.createTaskList(AbstractTaskList.type);
+            AbstractTaskList tempList = new ArrayTaskList();
             tasks.forEach(tempList::add);
-            Stream<Task> str;
-            str = tempList.getStream();
-            AbstractTaskList incomTask = TaskListFactory.createTaskList(AbstractTaskList.type);
+            Stream<Task> str = tempList.getStream();
+            Set<Task> incomTask = new LinkedHashSet<Task>();
+
             str.filter(s -> s != null && s.nextTimeAfter(start) != null && s.nextTimeAfter(start).isAfter(start.minusSeconds(1)) &&
                     s.nextTimeAfter(start).isBefore(end.plusSeconds(1)) && s.isActive()).forEach(incomTask::add);
             return incomTask;
@@ -39,33 +41,20 @@ public class Tasks  {
         if (start.isBefore(LocalDateTime.MIN) && end.isBefore(LocalDateTime.MAX) && start.isBefore(end)) {
             throw new IllegalArgumentException();
         } else {
-            AbstractTaskList incomTasksList = (AbstractTaskList) incoming(tasks, start, end);
+            LinkedHashSet<Task> incomTasksList = (LinkedHashSet<Task>) incoming(tasks, start, end);
             SortedMap<LocalDateTime, Set<Task>> TableOfTasks = new TreeMap<>();
             LocalDateTime timeOfTasks;
-            for (int i = 0; i < incomTasksList.size(); i++) {
+            for (Task temp: incomTasksList) {
                 timeOfTasks = start;
                 while (timeOfTasks != null && (timeOfTasks.isBefore(end) | timeOfTasks.isEqual(end))) {
-//                --------------------------------------------------------- Реализация через Stream
                     Set<Task> tasksForDate;
-                    timeOfTasks = incomTasksList.getTask(i).nextTimeAfter(timeOfTasks);
-                    Stream<Task> str = incomTasksList.getStream();
+                    timeOfTasks = temp.nextTimeAfter(timeOfTasks);
+                    Stream<Task> str = incomTasksList.stream();
                     LocalDateTime finalTimeOfTasks = timeOfTasks;
                     tasksForDate = str.filter(s -> finalTimeOfTasks != null && finalTimeOfTasks.equals(s.nextTimeAfter(finalTimeOfTasks.minusSeconds(1)))).collect(Collectors.toSet());
                     if (timeOfTasks != null && (timeOfTasks.isBefore(end) | timeOfTasks.isEqual(end))) {
                         TableOfTasks.put(timeOfTasks, tasksForDate);
                     }
-//                --------------------------------------------------------- Реализация через for/if
-//                Set<Task> tasksForDate = new LinkedHashSet<>();
-//                timeOfTasks = incomTasksList.getTask(i).nextTimeAfter(timeOfTasks);
-//                for (int j = 0; j < incomTasksList.size(); j++) {
-//                    if (timeOfTasks != null && timeOfTasks.equals(incomTasksList.getTask(j).nextTimeAfter(timeOfTasks.minusSeconds(1)))) {
-//                        tasksForDate.add(incomTasksList.getTask(j));
-//                    }
-//                }
-//                if (timeOfTasks != null && (timeOfTasks.isBefore(end) | timeOfTasks.isEqual(end))) {
-//                    TableOfTasks.put(timeOfTasks, tasksForDate);
-//                }
-//                ----------------------------------------------------------
                 }
             }
             return TableOfTasks;

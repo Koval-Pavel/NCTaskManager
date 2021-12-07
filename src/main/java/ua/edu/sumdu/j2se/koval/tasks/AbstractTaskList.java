@@ -1,6 +1,8 @@
 package ua.edu.sumdu.j2se.koval.tasks;
 
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -10,7 +12,7 @@ import java.util.stream.Stream;
 public abstract class AbstractTaskList implements Iterable<Task>{
     protected int taskCounter = 0;
     protected int tasksQuantity = 10;
-    protected static ListTypes.types type ;
+    protected  ListTypes.types type ;
 
     /**
      * Абстрактний опис метода, що додає до списку вказану "Задачу".
@@ -44,6 +46,8 @@ public abstract class AbstractTaskList implements Iterable<Task>{
         } else
             return  getTask(i).getTitle().equals(task.getTitle()) && getTask(i).getTime() == task.getTime();
     }
+
+
 
     /**
      Перевизначення методу, для реалізації порівнянь "Задач" в списках.
@@ -95,7 +99,13 @@ public abstract class AbstractTaskList implements Iterable<Task>{
     /**
      Метод, що дозволяє працювати нам з коллекціями як з потоками.
      */
-    public abstract Stream<Task> getStream();
+    public Stream<Task> getStream() {
+        Task[] collToArr = new Task[size() ];
+        for (int i = 0; i < collToArr.length; i++) {
+            collToArr[i] = getTask(i);
+        }
+        return Arrays.stream(collToArr);
+    }
 
 
 }

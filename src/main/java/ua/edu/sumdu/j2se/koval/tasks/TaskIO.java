@@ -17,7 +17,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 /**
  Клас що реалізовує можливість передачі через мережу та збереження на диску списків задач.
@@ -33,45 +36,26 @@ public class TaskIO {
         try (DataOutputStream writeTask = new DataOutputStream(out))
         {
             int TasksQuantity =  tasks.size();
-            writeTask.writeInt(TasksQuantity);                              // Кількість задач
+            writeTask.writeInt(TasksQuantity);
             for (Task temp: tasks) {
                 String taskTitle = temp.getTitle();
 
                 int taskTitleLength = taskTitle.length();
-                writeTask.writeInt(taskTitleLength);                        // довжина назви
-                writeTask.writeUTF(taskTitle);                              // Назва
+                writeTask.writeInt(taskTitleLength);
+                writeTask.writeUTF(taskTitle);
                 int taskActivity = temp.isActive() ? 1 :0;
-                writeTask.writeInt(taskActivity);                           // Активність
-                writeTask.writeBoolean(temp.isRepeated());                  // Повторюваніть
+                writeTask.writeInt(taskActivity);
+                writeTask.writeBoolean(temp.isRepeated());
                 if ( temp.isRepeated()) {
                     LocalDateTime startTime = temp.getStartTime();
-                    writeTask.writeInt(startTime.getYear());                // Інтервали 7 + 7
-                    writeTask.writeInt(startTime.getMonthValue());
-                    writeTask.writeInt(startTime.getDayOfMonth());
-                    writeTask.writeInt(startTime.getHour());
-                    writeTask.writeInt(startTime.getMinute());
-                    writeTask.writeInt(startTime.getSecond());
-                    writeTask.writeInt(startTime.getNano());
-
+                    writeTask.writeLong(startTime.atZone(ZoneId.systemDefault()).toEpochSecond());
                     LocalDateTime endTime = temp.getEndTime();
-                    writeTask.writeInt(endTime.getYear());
-                    writeTask.writeInt(endTime.getMonthValue());
-                    writeTask.writeInt(endTime.getDayOfMonth());
-                    writeTask.writeInt(endTime.getHour());
-                    writeTask.writeInt(endTime.getMinute());
-                    writeTask.writeInt(endTime.getSecond());
-                    writeTask.writeInt(endTime.getNano());
-                    writeTask.writeInt(temp.getRepeatInterval());           // інтервал
+                    writeTask.writeLong(endTime.atZone(ZoneId.systemDefault()).toEpochSecond());
+                    writeTask.writeInt(temp.getRepeatInterval());
                 } else {
+                    LocalDateTime startTime = temp.getTime();
+                    writeTask.writeLong(startTime.atZone(ZoneId.systemDefault()).toEpochSecond());
 
-                    LocalDateTime startTime = temp.getTime();               // час виконання 7
-                    writeTask.writeInt(startTime.getYear());
-                    writeTask.writeInt(startTime.getMonthValue());
-                    writeTask.writeInt(startTime.getDayOfMonth());
-                    writeTask.writeInt(startTime.getHour());
-                    writeTask.writeInt(startTime.getMinute());
-                    writeTask.writeInt(startTime.getSecond());
-                    writeTask.writeInt(startTime.getNano());
                 }
             }
         }
@@ -87,32 +71,30 @@ public class TaskIO {
     public static void read(AbstractTaskList tasks, InputStream in) {
         try (DataInputStream readTask = new DataInputStream(in))
         {
-            tasks.tasksQuantity = readTask.readInt();                        // read Кількість задач
+            tasks.tasksQuantity = readTask.readInt();
             for (int i = 0; i < tasks.tasksQuantity; i++) {
-
-                tasks.add(new Task("Default",LocalDateTime.MIN,LocalDateTime.MIN,0));
-
-                int taskTitleLength = readTask.readInt();                    // read довжина назви
-                tasks.getTask(i).setTitle(readTask.readUTF());               // read Назва
-                tasks.getTask(i).setActive(readTask.readInt() == 1);         // read Активність
+                Task task;
+                int taskTitleLength = readTask.readInt();
+                String  title = readTask.readUTF();
+                int activity = readTask.readInt();
 
                 if (readTask.readBoolean()) {
-                    LocalDateTime startTime;
-                    startTime =LocalDateTime.of(readTask.readInt(),readTask.readInt(),readTask.readInt(),               //read Інтервали 7 + 7
-                            readTask.readInt(),readTask.readInt(),readTask.readInt(),readTask.readInt()) ;
+                    LocalDateTime startTime =
+                            LocalDateTime.ofInstant(Instant.ofEpochSecond(readTask.readLong()),ZoneId.systemDefault());
 
-                    LocalDateTime endTime;
-                    endTime =LocalDateTime.of(readTask.readInt(),readTask.readInt(),readTask.readInt(),
-                            readTask.readInt(),readTask.readInt(),readTask.readInt(),readTask.readInt()) ;
+                    LocalDateTime endTime =
+                            LocalDateTime.ofInstant(Instant.ofEpochSecond(readTask.readLong()),ZoneId.systemDefault());
 
                     int interval = readTask.readInt();
-                    tasks.getTask(i).setTime(startTime, endTime, interval);
+                    task= new Task(title,startTime,endTime,interval);
                 } else {
-                    LocalDateTime time;
-                    time =LocalDateTime.of(readTask.readInt(),readTask.readInt(),readTask.readInt(),                    // read час виконання 7
-                            readTask.readInt(),readTask.readInt(),readTask.readInt(),readTask.readInt()) ;
-                    tasks.getTask(i).setTime(time);
+                    LocalDateTime time =
+                            LocalDateTime.ofInstant(Instant.ofEpochSecond(readTask.readLong()),ZoneId.systemDefault());
+                    task= new Task(title,time);
                 }
+                task.setActive(activity == 1);
+                tasks.add(task);
+
             }
         }
         catch(IOException ex) {
@@ -123,16 +105,29 @@ public class TaskIO {
     /**
      Метод що записує  задачі із списку у файл.
      */
-    public static void writeBinary(AbstractTaskList tasks, File file) throws FileNotFoundException {
-        write (tasks, new FileOutputStream(file)) ;
+    public static void writeBinary(AbstractTaskList tasks, File file)  {
+        try (FileOutputStream fos = new FileOutputStream(file))
+        {
+            write(tasks,fos);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     /**
      Метод що  зчитує задачі із файлу у список задач.
      */
-    public static void readBinary(AbstractTaskList tasks, File file) throws FileNotFoundException {
-        read (tasks, new FileInputStream(file));
+    public static void readBinary(AbstractTaskList tasks, File file)  {
+        try ( FileInputStream fis = new FileInputStream(file))
+        {
+            read(tasks,fis);
+        } catch (FileNotFoundException ex) {
+            System.out.println(ex.getMessage());
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
+
 
     /**
      Метод що записує задачі зі списку у потік в форматі JSON.
@@ -142,7 +137,6 @@ public class TaskIO {
             Gson gson = new Gson();
             String jSonString;
             AbstractTaskList listForSerial;
-
             if (tasks instanceof LinkedTaskList) {
                 listForSerial = new ArrayTaskList();
                 for (Task temp : tasks) {
@@ -153,6 +147,7 @@ public class TaskIO {
             }
             jSonString =  gson.toJson(listForSerial);
             bw.write(jSonString);
+            bw.flush();
         }
         catch(IOException  ex){
 
@@ -177,20 +172,31 @@ public class TaskIO {
             System.out.println(ex.getMessage());
         }
     }
-//-----------------------------------------------
 
     /**
      Метод що записує задачі у файл у форматі JSON.
      */
-    public static void writeText(AbstractTaskList tasks, File file) throws IOException {
-        write(tasks, new FileWriter(file));
+    public static void writeText(AbstractTaskList tasks, File file)  {
+        try (FileWriter fw = new FileWriter(file))
+        {
+            write(tasks,fw);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     /**
      Метод що – зчитує задачі із файлу.
      */
-    public static void readText(AbstractTaskList tasks, File file) throws IOException {
-        read(tasks, new FileReader(file));
+    public static void readText(AbstractTaskList tasks, File file) {
+        try ( FileReader fr = new FileReader(file))
+        {
+            read(tasks,fr);
+        } catch (FileNotFoundException ex) {
+            System.out.println(ex.getMessage());
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
 
