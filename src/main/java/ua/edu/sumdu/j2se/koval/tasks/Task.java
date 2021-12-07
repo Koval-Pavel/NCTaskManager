@@ -128,12 +128,12 @@ public class Task implements Cloneable {
         if (start.isBefore(LocalDateTime.MIN) && end.isBefore(LocalDateTime.MAX) && interval < 0) {
             throw new IllegalArgumentException();
         } else {
-        if (!isRepeated()) {
-            this.start = start;
-            this.end = end;
-            this.interval = interval;
-            repetitive = true;
-        }
+            if (!isRepeated()) {
+                this.start = start;
+                this.end = end;
+                this.interval = interval;
+                repetitive = true;
+            }
         }
     }
 
@@ -152,21 +152,21 @@ public class Task implements Cloneable {
         if (current.isBefore(LocalDateTime.MIN)) {
             throw new IllegalArgumentException();
         } else {
-        if (isActive()) {
-            if (!repetitive) {
-                return (current.isBefore(time)) ? time : null;
-            } else {
-                if (current.isBefore(start)) {
-                    return start;
+            if (isActive()) {
+                if (!repetitive) {
+                    return (current.isBefore(time)) ? time : null;
                 } else {
-                    if (current.isBefore(end.minusSeconds(Duration.between(start,end).toSeconds() % interval) )) {
-                        return current.plusSeconds(interval - (Duration.between(start,current).toSeconds() % interval)) ;
-                    } else
-                        return null;
+                    if (current.isBefore(start)) {
+                        return start;
+                    } else {
+                        if (current.isBefore(end.minusSeconds(Duration.between(start,end).toSeconds() % interval) )) {
+                            return current.plusSeconds(interval - (Duration.between(start,current).toSeconds() % interval)) ;
+                        } else
+                            return null;
+                    }
                 }
-            }
-        } else
-            return null;
+            } else
+                return null;
         }
     }
 
