@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 public abstract class AbstractTaskList implements Iterable<Task>{
     protected int taskCounter = 0;
     protected int tasksQuantity = 10;
+
     protected  ListTypes.types type ;
 
     /**
