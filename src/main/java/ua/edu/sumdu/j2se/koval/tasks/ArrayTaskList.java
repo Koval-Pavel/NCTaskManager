@@ -8,7 +8,7 @@ import java.util.stream.Stream;
  */
 public class ArrayTaskList extends AbstractTaskList implements Cloneable {
 
-    private int arrDimension = 10;
+    private int arrDimension = tasksQuantity;
     private Task[] tasksList;
 
     /**

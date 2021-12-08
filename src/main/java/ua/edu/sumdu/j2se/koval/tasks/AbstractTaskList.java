@@ -1,6 +1,7 @@
 package ua.edu.sumdu.j2se.koval.tasks;
 
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -10,6 +11,8 @@ import java.util.stream.Stream;
  */
 public abstract class AbstractTaskList implements Iterable<Task>{
     protected int taskCounter = 0;
+    protected int tasksQuantity = 10;
+
     protected  ListTypes.types type ;
 
     /**
