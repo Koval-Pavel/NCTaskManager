@@ -1,26 +1,11 @@
-package ua.edu.sumdu.j2se.koval.tasks;
+package ua.edu.sumdu.j2se.koval.tasks.model;
 
 import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 
 /**
  Клас що реалізовує можливість передачі через мережу та збереження на диску списків задач.
@@ -129,6 +114,7 @@ public class TaskIO {
     }
 
 
+
     /**
      Метод що записує задачі зі списку у потік в форматі JSON.
      */
@@ -145,7 +131,7 @@ public class TaskIO {
             } else {
                 listForSerial = tasks;
             }
-            jSonString =  gson.toJson(listForSerial);
+            jSonString = gson.toJson(listForSerial);
             bw.write(jSonString);
             bw.flush();
         }
@@ -171,6 +157,8 @@ public class TaskIO {
         catch(IOException ex){
             System.out.println(ex.getMessage());
         }
+
+
     }
 
     /**

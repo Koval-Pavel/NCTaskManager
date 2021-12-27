@@ -1,4 +1,4 @@
-package ua.edu.sumdu.j2se.koval.tasks;
+package ua.edu.sumdu.j2se.koval.tasks.model;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -196,7 +196,7 @@ public class LinkedTaskList extends AbstractTaskList implements Cloneable{
      */
     @Override
     public Stream<Task> getStream() {
-        Task[] collToArr = new Task[size() ];
+        Task[] collToArr = new Task[size()];
         for (int i = 0; i < collToArr.length; i++) {
             collToArr[i] = getTask(i);
         }

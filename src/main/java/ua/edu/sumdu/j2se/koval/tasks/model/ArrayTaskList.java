@@ -1,6 +1,8 @@
-package ua.edu.sumdu.j2se.koval.tasks;
+package ua.edu.sumdu.j2se.koval.tasks.model;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 /**
@@ -9,7 +11,7 @@ import java.util.stream.Stream;
 public class ArrayTaskList extends AbstractTaskList implements Cloneable {
 
     private int arrDimension = tasksQuantity;
-    private Task[] tasksList;
+    private  Task[] tasksList;
 
     /**
      * Конструктор в якому ініціалізується масив для майбутніх "Задач".
@@ -27,11 +29,11 @@ public class ArrayTaskList extends AbstractTaskList implements Cloneable {
             throw new NullPointerException();
         } else {
             tasksList[taskCounter] = task;
-            if (taskCounter == (arrDimension - 1)) {
-                Task[] TasksListCopy = new Task[arrDimension + 15];
+            if (taskCounter >= (arrDimension - 1) ) {
+                Task[] TasksListCopy = new Task[arrDimension + 10];
                 System.arraycopy(tasksList, 0, TasksListCopy, 0, arrDimension);
                 tasksList = TasksListCopy;
-                arrDimension += 15;
+                arrDimension += 10;
             }
             ++taskCounter;
         }
@@ -74,6 +76,7 @@ public class ArrayTaskList extends AbstractTaskList implements Cloneable {
      */
     @Override
     public Iterator<Task> iterator() {
+
         return new Iterator<Task>() {
             int nextCallCounter = 0;
             int currentIndexIterator = 0;
@@ -127,7 +130,7 @@ public class ArrayTaskList extends AbstractTaskList implements Cloneable {
      */
     @Override
     public Stream<Task> getStream() {
-        return super.getStream();
+        return Arrays.stream(tasksList,0,size());
     }
 
 

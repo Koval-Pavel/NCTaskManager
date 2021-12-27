@@ -1,15 +1,11 @@
 package ua.edu.sumdu.j2se.koval.tasks;
 
-
-
-
-import java.io.IOException;
+import ua.edu.sumdu.j2se.koval.tasks.controller.MainMenuController;
+import ua.edu.sumdu.j2se.koval.tasks.view.MainMenuView;
 
 public class Main {
 
-	public static void main(String[] args)  {
-		System.out.println("Hello");
-
+	public static void main(String[] args) {
+		new MainMenuController(new MainMenuView());
 	}
-
 }

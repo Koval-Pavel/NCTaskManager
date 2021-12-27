@@ -1,8 +1,7 @@
-package ua.edu.sumdu.j2se.koval.tasks;
+package ua.edu.sumdu.j2se.koval.tasks.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Objects;
 
 /**
@@ -21,12 +20,12 @@ public class Task implements Cloneable {
      * Конструктор не активної задачі, яка виконується у заданий час без повторення із заданою назвою.
      */
     public Task(String title, LocalDateTime time) throws IllegalArgumentException{
-        if (time == null) {
+        if (time.isBefore(LocalDateTime.parse("0000-01-01T00:00:00"))) {
             throw new IllegalArgumentException();
         } else {
             this.title = title;
             this.time = time;
-            active = false;
+            active = true;
             repetitive = false;
         }
     }
@@ -36,14 +35,14 @@ public class Task implements Cloneable {
      * заданим інтервалом.
      */
     public Task(String title, LocalDateTime start, LocalDateTime end, int interval) throws IllegalArgumentException{
-        if (start == null  && end ==null  && interval < 0) {
+        if (start.isBefore(LocalDateTime.parse("0000-01-01T00:00:00"))  | end.isBefore(LocalDateTime.parse("0000-01-01T00:00:00"))  | interval < 0 | end.isBefore(start) ) {
             throw new IllegalArgumentException();
         } else {
             this.title = title;
             this.start = start;
             this.end = end;
             this.interval = interval;
-            active = false;
+            active = true;
             repetitive = true;
         }
     }
@@ -87,9 +86,9 @@ public class Task implements Cloneable {
      * Метод що встановлює час виконання "Задачі" (що не повторюється).
      */
     public void setTime(LocalDateTime time) throws IllegalArgumentException {
-//        if (time.isBefore(null)) {
-//            throw new IllegalArgumentException();
-//        } else {
+        if (time.isBefore(LocalDateTime.parse("0000-01-01T00:00:00"))) {
+            throw new IllegalArgumentException();
+        } else {
         if (isRepeated()) {
             start = time;
             end = time;
@@ -98,7 +97,7 @@ public class Task implements Cloneable {
             repetitive = false;
         } else
             this.time = time;
-//        }
+        }
     }
 
     /**
@@ -126,7 +125,7 @@ public class Task implements Cloneable {
      * Метод що встановлює час початку, закінченяя та інтервалу виконання "Задачі" (що повторюється).
      */
     public void setTime(LocalDateTime start, LocalDateTime end, int interval) throws IllegalArgumentException {
-        if (start.isBefore(LocalDateTime.MIN) && end.isBefore(LocalDateTime.MAX) && interval < 0) {
+        if (start.isBefore(LocalDateTime.parse("0000-01-01T00:00:00")) | end.isBefore(LocalDateTime.parse("0000-01-01T00:00:00")) | interval < 0) {
             throw new IllegalArgumentException();
         } else {
             if (!isRepeated()) {
@@ -147,10 +146,10 @@ public class Task implements Cloneable {
 
     /**
      * Метод що повертає час наступного виконання задачі після вказаного часу current,
-     * якщо задача не виконується - повертає значення -1
+     * якщо задача не виконується - повертає значення null
      */
     public LocalDateTime nextTimeAfter(LocalDateTime current) throws IllegalArgumentException {
-        if (current.isBefore(LocalDateTime.MIN)) {
+        if (current.isBefore(LocalDateTime.parse("0000-01-01T00:00:00"))) {
             throw new IllegalArgumentException();
         } else {
             if (isActive()) {
@@ -160,6 +159,10 @@ public class Task implements Cloneable {
                     if (current.isBefore(start)) {
                         return start;
                     } else {
+//                        if (current.isBefore(end.minusSeconds( (end.atZone(ZoneId.systemDefault()).toEpochSecond() -
+//                                start.atZone(ZoneId.systemDefault()).toEpochSecond())  % interval) )) {
+//                            return current.plusSeconds(interval - ((current.atZone(ZoneId.systemDefault()).toEpochSecond() -
+//                                    start.atZone(ZoneId.systemDefault()).toEpochSecond()) % interval));
                         if (current.isBefore(end.minusSeconds(Duration.between(start,end).toSeconds() % interval) )) {
                             return current.plusSeconds(interval - (Duration.between(start,current).toSeconds() % interval)) ;
                         } else
@@ -206,20 +209,20 @@ public class Task implements Cloneable {
         String text;
         if (interval !=0) {
             text = "{" +
-                    "title='" + title + '\'' +
-                    ", start=" + start +
-                    ", end=" + end +
-                    ", interval=" + interval +
-                    ", active=" + active +
-                    ", repetitive=" + repetitive +
+                    "title = '" + title + '\'' +
+                    ", start = " + start +
+                    ", end = " + end +
+                    ", interval = " + interval +
+                    ", active = " + active +
+                    ", repetitive = " + repetitive +
                     '}';
         } else {
             text = "{" +
-                    "title='" + title + '\'' +
-                    ", time=" + time +
+                    "title = '" + title + '\'' +
+                    ", time = " + time +
 
-                    ", active=" + active +
-                    ", repetitive=" + repetitive +
+                    ", active = " + active +
+                    ", repetitive = " + repetitive +
                     '}';
         }
 

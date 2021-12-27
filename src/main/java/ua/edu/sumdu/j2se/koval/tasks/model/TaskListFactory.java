@@ -1,4 +1,4 @@
-package ua.edu.sumdu.j2se.koval.tasks;
+package ua.edu.sumdu.j2se.koval.tasks.model;
 
 /**
  *  Класс що реалізує вибір конкретного механізму реалізації списку "Задач".
