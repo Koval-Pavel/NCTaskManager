@@ -28,7 +28,7 @@ public class CalendarView extends View {
             if (!tempCal.isEmpty()) {
                 System.out.println("Your Calendar from " + startTime + " to " + endTime + " :");
                 for (Map.Entry<LocalDateTime, Set<Task>> item : tempCal.entrySet()) {
-                    System.out.print("Time: " + item.getKey() + " " + "Tasks Title: ");
+                    System.out.print("Time: " + item.getKey().format(formatter) + " " + "Tasks Title: ");
                     item.getValue().forEach(s -> System.out.print(s.getTitle() + "; "));
                     System.out.println();
                 }

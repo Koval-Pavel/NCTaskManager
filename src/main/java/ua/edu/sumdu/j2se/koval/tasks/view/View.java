@@ -22,6 +22,8 @@ public abstract class View  {
     public static boolean fromEditToCalendar = false;
     public static SortedMap<LocalDateTime, Set<Task>> tempCal;
     public static AbstractTaskList tempTaskList;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
 
     public final String enterTitle = "Enter task title: ";
     public final String enterStartTime = "Enter START time in format (yyyy-mm-dd hh:mm) exmpl: 2021-12-31 23:59";
@@ -63,7 +65,6 @@ public abstract class View  {
     public LocalDateTime readTime(String message) {
         boolean inputCheck = false;
         LocalDateTime time = null;
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             Scanner sc = new Scanner(System.in);
             System.out.println(message);
             String enter = sc.nextLine();
