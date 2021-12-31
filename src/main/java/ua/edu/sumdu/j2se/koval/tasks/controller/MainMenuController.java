@@ -17,7 +17,7 @@ public class MainMenuController extends Controller{
     private final ArrayList<Controller> controllers = new ArrayList<>();
 
 
-    public MainMenuController( View mainView) {
+    public MainMenuController(View mainView) {
 
         super(mainView, Controller.MAIN_MENU);
         log.info("Program start");
@@ -51,8 +51,7 @@ public class MainMenuController extends Controller{
 
     @Override
     public int work(AbstractTaskList tasksList) {
-
-        int action = view.printInfo(tasksList); // Вывод первичного меню
+        int action = view.printInfo(tasksList);
         for ( ; ; ) {
             for (Controller tempController: controllers) {
                 if (tempController.canWork(action)) {
@@ -66,5 +65,4 @@ public class MainMenuController extends Controller{
         }
         return Controller.EXIT;
     }
-
 }

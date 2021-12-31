@@ -12,38 +12,34 @@ public class AddTaskController extends Controller {
 
     @Override
     public int work(AbstractTaskList tasksList) {
-        int variant = 1;
+        int variant = MAIN_MENU;
         boolean repetitive;
-        while (variant == 1 | variant == 11) {
+        while (variant == MAIN_MENU | variant == SUB_MENU) {
             repetitive = view.readBoolean("Task will be repetitive? Please insert (y/n)", "[y,n]");
             try {
                 if (repetitive) {
                     tasksList.add(new Task(view.readString(view.enterTitle),
-                            view.readTime(view.enterStartTime, view.timeFormat),
-                            view.readTime(view.enterEndTime, view.timeFormat),
+                            view.readTime(view.enterStartTime),
+                            view.readTime(view.enterEndTime),
                             View.readInt(view.enterInterval, "[1-9][0-9]*")));
                 } else {
                     tasksList.add(new Task(view.readString(view.enterTitle),
-                        view.readTime(view.enterStartTime, view.timeFormat)));
+                        view.readTime(view.enterStartTime)));
                 }
                 log.info("New task was added");
                 notifyObserver(tasksList);
             } catch (IllegalArgumentException ex) {
                 System.out.println("Mistake in time input. Task didn't add.");
-                log.warn("Mistake in task add (End before Star). IllegalArgumentException");
             }
             variant = view.printInfo(tasksList);
         }
 
-        if (variant == 2) {variant = 1; }
-        if (variant == 12 && View.subMenuTaskList) { variant = 2;}
-        if (variant == 12 && View.subMenuCalendar) {
-            variant = 3;
+        if (variant == MAIN_MENU + 1) {variant = MAIN_MENU; }
+        if (variant == SUB_MENU + 1 && View.subMenuTaskList) { variant = TASK_LIST;}
+        if (variant == SUB_MENU + 1 && View.subMenuCalendar) {
+            variant = CALENDAR_LIST;
             View.fromEditToCalendar = true;
         }
         return variant;
     }
-
-
-
 }

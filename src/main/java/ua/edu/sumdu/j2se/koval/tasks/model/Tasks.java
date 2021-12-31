@@ -25,8 +25,7 @@ public class Tasks  {
             AbstractTaskList tempList = new ArrayTaskList();
             tasks.forEach(tempList::add);
             Stream<Task> str = tempList.getStream();
-            Set<Task> incomTask = new LinkedHashSet<Task>();//
-//            AbstractTaskList incomTask = new ArrayTaskList();
+            Set<Task> incomTask = new LinkedHashSet<>();
 
             str.filter(s -> s != null && s.nextTimeAfter(start) != null && s.nextTimeAfter(start).isAfter(start.minusSeconds(1)) &&
                     s.nextTimeAfter(start).isBefore(end.plusSeconds(1)) && s.isActive()).forEach(incomTask::add);
@@ -43,8 +42,6 @@ public class Tasks  {
             throw new IllegalArgumentException();
         } else {
             LinkedHashSet<Task> incomTasksList = (LinkedHashSet<Task>) incoming(tasks, start, end);//
-//            AbstractTaskList incomTasksList = (ArrayTaskList) incoming(tasks, start, end);
-
             SortedMap<LocalDateTime, Set<Task>> TableOfTasks = new TreeMap<>();
             LocalDateTime timeOfTasks;
             for (Task temp: incomTasksList) {
@@ -53,7 +50,6 @@ public class Tasks  {
                     Set<Task> tasksForDate;
                     timeOfTasks = temp.nextTimeAfter(timeOfTasks);
                     Stream<Task> str = incomTasksList.stream();//
-//                    Stream<Task> str = incomTasksList.getStream();
                     LocalDateTime finalTimeOfTasks = timeOfTasks;
                     tasksForDate = str.filter(s -> finalTimeOfTasks != null && finalTimeOfTasks.equals(s.nextTimeAfter(finalTimeOfTasks.minusSeconds(1)))).collect(Collectors.toSet());
                     if (timeOfTasks != null && (timeOfTasks.isBefore(end) | timeOfTasks.isEqual(end))) {

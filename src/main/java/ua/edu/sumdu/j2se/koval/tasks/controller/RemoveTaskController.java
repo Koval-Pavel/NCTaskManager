@@ -12,10 +12,12 @@ public class RemoveTaskController extends Controller{
     public int work(AbstractTaskList tasksList) {
         int numberOfTask;
         numberOfTask = view.printInfo(tasksList);
-        AbstractTaskList temp = View.subMenuTaskList ? tasksList: View.tempTaskList;
-        tasksList.remove(temp.getTask(numberOfTask));
-        log.info("Task removed");
-        notifyObserver(tasksList);
+        if (numberOfTask != -1) {
+            AbstractTaskList temp = View.subMenuTaskList ? tasksList : View.tempTaskList;
+            tasksList.remove(temp.getTask(numberOfTask));
+            log.info("Task removed");
+            notifyObserver(tasksList);
+        }
         return menuChoose();
     }
 }

@@ -5,12 +5,15 @@ import ua.edu.sumdu.j2se.koval.tasks.model.ArrayTaskList;
 import ua.edu.sumdu.j2se.koval.tasks.model.Task;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static ua.edu.sumdu.j2se.koval.tasks.controller.Controller.log;
 
 public abstract class View  {
 
@@ -21,10 +24,9 @@ public abstract class View  {
     public static AbstractTaskList tempTaskList;
 
     public final String enterTitle = "Enter task title: ";
-    public final String enterStartTime = "Enter START time in format (yyy-mm-ddThh:mm:ss) exmpl: " + LocalDateTime.now().withNano(0);
-    public final String enterEndTime = "Enter END Time in format (yyy-mm-ddThh:mm:ss) exmpl: " + LocalDateTime.now().withNano(0);
+    public final String enterStartTime = "Enter START time in format (yyyy-mm-dd hh:mm) exmpl: 2021-12-31 23:59";
+    public final String enterEndTime = "Enter END Time in format (yyyy-mm-dd hh:mm) exmpl: 2021-12-31 23:59";
     public final String enterInterval = "Enter Task time INTERVAL in seconds:";
-    public final String timeFormat = "^(\\d{4,})-(\\d{2})-(\\d{2})[T ](\\d{2}):(\\d{2})(?::(\\d{2}(?:\\.\\d+)?))?$";
 
     public abstract int printInfo(AbstractTaskList tasksList);
 
@@ -40,38 +42,38 @@ public abstract class View  {
         String enter = sc.nextLine();
         while (!enter.matches(regEx)) {
             System.out.println("Input don't match specifications. Try again.");
+            log.warn("Mistake in number choose. IllegalArgumentException");
             enter = sc.nextLine();
         }
         return Integer.parseInt(enter);
     }
 
     public String readString (String message) {
-        Scanner sc = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in, "UTF-8");
         System.out.println(message);
         String enter = sc.nextLine();
         while (enter.equals("")) {
             System.out.println("Input don't match specifications. Try again.");
+            log.warn("Mistake in string input. IllegalArgumentException");
             enter = sc.nextLine();
         }
         return (enter);
     }
 
-    public LocalDateTime readTime(String message, String regEx) {
+    public LocalDateTime readTime(String message) {
         boolean inputCheck = false;
         LocalDateTime time = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             Scanner sc = new Scanner(System.in);
             System.out.println(message);
             String enter = sc.nextLine();
         while (!inputCheck) {
-//            while (!enter.matches(regEx)) {
-//                System.out.println("Input don't match specifications. Try again.");
-//                enter = sc.nextLine();
-//            }
             try {
-                time = LocalDateTime.parse(enter);
+                time = LocalDateTime.parse(enter, formatter);
                 inputCheck = true;
             } catch (DateTimeParseException ex) {
                 System.out.println("Invalid date format, please try again:");
+                log.warn("Mistake in time input. IllegalArgumentException");
                 enter = sc.nextLine();
             }
         }
@@ -84,6 +86,7 @@ public abstract class View  {
         String enter = sc.nextLine().toLowerCase();
         while (!enter.matches(regEx)) {
             System.out.println("Input don't match specifications. Try again.");
+            log.warn("Mistake in choose (y/n). IllegalArgumentException");
             enter = sc.nextLine();
         }
         return enter.matches("y");
@@ -106,8 +109,6 @@ public abstract class View  {
             taskQuantity = tasksList.size() - 1;
         }
             numberOfTask = readInt("Task#: ", "[0-" + taskQuantity + "]");
-
         return numberOfTask;
     }
-
 }

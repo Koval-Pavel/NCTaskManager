@@ -1,6 +1,5 @@
 package ua.edu.sumdu.j2se.koval.tasks.model;
 
-
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -44,8 +43,6 @@ public abstract class AbstractTaskList implements Iterable<Task>{
         } else
             return  getTask(i).getTitle().equals(task.getTitle()) && getTask(i).getTime() == task.getTime();
     }
-
-
 
     /**
      Перевизначення методу, для реалізації порівнянь "Задач" в списках.
@@ -98,6 +95,4 @@ public abstract class AbstractTaskList implements Iterable<Task>{
      Метод, що дозволяє працювати нам з коллекціями як з потоками.
      */
     public abstract Stream<Task> getStream();
-
-
 }

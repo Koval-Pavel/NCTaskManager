@@ -157,8 +157,6 @@ public class TaskIO {
         catch(IOException ex){
             System.out.println(ex.getMessage());
         }
-
-
     }
 
     /**
@@ -180,12 +178,10 @@ public class TaskIO {
         try ( FileReader fr = new FileReader(file))
         {
             read(tasks,fr);
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException ex ) {
             System.out.println(ex.getMessage());
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
     }
-
-
 }

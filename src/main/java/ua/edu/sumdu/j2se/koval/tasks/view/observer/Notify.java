@@ -1,4 +1,4 @@
-package ua.edu.sumdu.j2se.koval.tasks.Observer;
+package ua.edu.sumdu.j2se.koval.tasks.view.observer;
 
 import org.apache.log4j.Logger;
 import ua.edu.sumdu.j2se.koval.tasks.controller.Controller;
@@ -45,8 +45,4 @@ public class Notify extends Thread  {
         interrupt();
         log.info("Thread interrupted #" + isActive );
     }
-
-
-
-
 }

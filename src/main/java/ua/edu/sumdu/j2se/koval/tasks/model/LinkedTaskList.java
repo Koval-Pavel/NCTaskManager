@@ -202,6 +202,4 @@ public class LinkedTaskList extends AbstractTaskList implements Cloneable{
         }
         return Arrays.stream(collToArr);
     }
-
-
 }

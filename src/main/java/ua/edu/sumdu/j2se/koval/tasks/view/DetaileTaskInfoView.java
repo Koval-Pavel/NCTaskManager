@@ -2,8 +2,8 @@ package ua.edu.sumdu.j2se.koval.tasks.view;
 
 import ua.edu.sumdu.j2se.koval.tasks.model.AbstractTaskList;
 
-
 public class DetaileTaskInfoView extends View {
+
     @Override
     public int printInfo(AbstractTaskList tasksList) {
         System.out.println("-------------Detailed information about Task-------------");

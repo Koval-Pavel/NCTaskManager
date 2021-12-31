@@ -2,6 +2,7 @@ package ua.edu.sumdu.j2se.koval.tasks.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -128,7 +129,7 @@ public class Task implements Cloneable {
         if (start.isBefore(LocalDateTime.parse("0000-01-01T00:00:00")) | end.isBefore(LocalDateTime.parse("0000-01-01T00:00:00")) | interval < 0) {
             throw new IllegalArgumentException();
         } else {
-            if (!isRepeated()) {
+            if (isRepeated()) {
                 this.start = start;
                 this.end = end;
                 this.interval = interval;
@@ -159,10 +160,6 @@ public class Task implements Cloneable {
                     if (current.isBefore(start)) {
                         return start;
                     } else {
-//                        if (current.isBefore(end.minusSeconds( (end.atZone(ZoneId.systemDefault()).toEpochSecond() -
-//                                start.atZone(ZoneId.systemDefault()).toEpochSecond())  % interval) )) {
-//                            return current.plusSeconds(interval - ((current.atZone(ZoneId.systemDefault()).toEpochSecond() -
-//                                    start.atZone(ZoneId.systemDefault()).toEpochSecond()) % interval));
                         if (current.isBefore(end.minusSeconds(Duration.between(start,end).toSeconds() % interval) )) {
                             return current.plusSeconds(interval - (Duration.between(start,current).toSeconds() % interval)) ;
                         } else
@@ -207,19 +204,20 @@ public class Task implements Cloneable {
     @Override
     public String toString() {
         String text;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         if (interval !=0) {
             text = "{" +
                     "title = '" + title + '\'' +
-                    ", start = " + start +
-                    ", end = " + end +
-                    ", interval = " + interval +
+                    ", start = " + start.format(formatter) +
+                    ", end = " + end.format(formatter) +
+                    ", interval, sec = " + interval +
                     ", active = " + active +
                     ", repetitive = " + repetitive +
                     '}';
         } else {
             text = "{" +
                     "title = '" + title + '\'' +
-                    ", time = " + time +
+                    ", time = " + time.format(formatter) +
 
                     ", active = " + active +
                     ", repetitive = " + repetitive +
@@ -228,6 +226,5 @@ public class Task implements Cloneable {
 
         return text;
     }
-
 }
 

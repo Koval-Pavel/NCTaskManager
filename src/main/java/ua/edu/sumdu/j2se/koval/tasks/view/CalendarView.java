@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 
-import static ua.edu.sumdu.j2se.koval.tasks.controller.Controller.log;
+import static ua.edu.sumdu.j2se.koval.tasks.controller.Controller.*;
 
 public class CalendarView extends View {
     public static LocalDateTime startTime;
@@ -16,12 +16,12 @@ public class CalendarView extends View {
 
     @Override
     public int printInfo(AbstractTaskList tasksList) {
-        int variant = 11;
+        int variant = SUB_MENU;
         System.out.println("-------------Check your Task List Calendar-------------");
         if (!fromEditToCalendar) {
                 System.out.println("Enter time periods for Calendar: ");
-                startTime = this.readTime(enterStartTime, timeFormat);
-                endTime = this.readTime(enterEndTime, timeFormat);
+                startTime = this.readTime(enterStartTime);
+                endTime = this.readTime(enterEndTime);
         }
         try {
             tempCal = Tasks.calendar(tasksList, startTime, endTime);
@@ -34,11 +34,10 @@ public class CalendarView extends View {
                 }
             } else {
                 System.out.println("Your Calendar is Empty");
-                variant = 1;
+                variant = MAIN_MENU;
             }
         } catch (IllegalArgumentException ex) {
             System.out.println("Mistake in time input. Calendar didn't create.");
-            log.warn("Mistake in time input. Calendar didn't create. IllegalArgumentException");
         }
         fromEditToCalendar = false;
         pressEnter();
